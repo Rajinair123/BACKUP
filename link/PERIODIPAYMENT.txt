@@ -1,0 +1,175 @@
+import React ,{useEffect,useMemo}from 'react'
+import moment from 'moment'
+import { Link } from 'react-router-dom'
+import periodicpaymentStore from '../store/periodicpaymentStore'
+import householdStore from '../store/householdStore'
+import householdexpStore from '../store/householdexpStore'
+
+const Periodicpayment =()=>{
+  const households = householdStore((state)=>state.households)
+    //console.log("households",households);
+    const retriveHousehold = householdStore((state)=>state.retriveHousehold)
+    const setPeriodicName=periodicpaymentStore((state)=>state.setPeriodicName)
+const periodicpayment = periodicpaymentStore((state)=>state.periodicpayment)
+const retrivePeriodicpayment = periodicpaymentStore((state)=>state.retrivePeriodicpayment)
+const deletePeriodicpayment = periodicpaymentStore((state)=>state.deletePeriodicpayment)
+const setHouseholdExpname = householdexpStore((state)=>state.setHouseholdExpname)
+const householdexpense = householdexpStore((state)=>state.householdexpense)
+  //console.log("householdexp",householdexpense)
+
+
+ useEffect(()=>{
+     
+  retrivePeriodicpayment()
+     retriveHousehold()
+ },[])
+
+
+ const onhandleChange=()=>{
+  let optionSelected=document.getElementById("n1").value;
+  //console.log("optionSelected",optionSelected);
+  let selectedHouseName=periodicpayment.filter((p)=>{
+    //console.log("p",p.household.name);
+    if(optionSelected==p.household.name){
+    return p
+    }
+  //   let optionSelected1=document.getElementById("n1").value;
+  //   console.log("optionSelected",optionSelected1);
+  //   let selectedHouseName=householdexpense.filter((he)=>{
+  //  console.log("hq",he.household.name);
+  //   if(optionSelected1==he.household.name){
+  //       return he
+  //     }
+    
+  })
+  // setHouseholdExpname(selectedHouseName)
+    
+  // })
+  setPeriodicName(selectedHouseName)
+ }
+
+ 
+ 
+ 
+
+//  const onhandleChange=()=>{
+//   let optionSelected=document.getElementById("n1").value;
+//   //console.log("optionSelected",optionSelected);
+//   let selectedHouseName=periodicpayment.filter((p)=>{
+//     //console.log("p",p.household.name);
+//     if(optionSelected==p.household.name){
+//     return p
+//     }
+   
+//   })
+//   setPeriodicName(selectedHouseName)
+//  }
+
+
+ const total = useMemo(()=>{
+    let total = 0;
+    periodicpayment?.map(elem=>{total += elem?.amount});
+    return total;
+},[periodicpayment]);
+
+
+
+
+    
+
+
+return(
+<div className="flex-col  flex items-center  ">
+<select id="n1" className="w-30 px-4 py-2 mt-2 border rounded-md
+               focus:outline-none focus:ring-1 focus:ring-blue-600" onChange={()=>onhandleChange()} >
+              
+              <option value="" disabled selected>
+            House Hold
+              </option>
+              {households.map((h) => (
+                <option key={h._id} value={h.name}>
+                  {h.name}
+                </option>
+              ))}
+            
+        </select>
+        <h2 className="text-black-500  font-bold  font-serif text-center text-3xl m-2 "></h2>
+       <table className="mr-20 m-9">
+           <thead>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black ">Household</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Frequency</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Payment Details</th>
+                <th className="bg-blue-300 border text-left px-2 py-4 text-black">Amount</th> 
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Due date</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Expense Type</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Description</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Paid By</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Paid Through</th>
+               <th className="bg-blue-300 border text-left px-2 py-4 text-black">Delete</th>
+               {/* <ExpensesFilter/> */}
+     
+           </thead>
+          
+           <tbody>
+                {periodicpayment.map((p)=>(
+                   <tr key={p._id}> 
+                   
+                       
+                       <td className="border px-2 py-4">{p.household.name}</td> 
+                        <td className="border px-2 py-4">{p.frequency}</td>
+                        <td className="border px-2 py-4">[{p.paymentDetails[0].amount},{p.paymentDetails[0].date},{p.paymentDetails[0].method}]</td>
+                        <td className="border px-2 py-4">{p.amount}</td>
+                        <td className="border px-2 py-4">{moment(p.dueDate).format('DD-MM-YYYY')}</td>
+                        <td className="border px-2 py-4">{p.expensetype.name}</td>
+                       <td className="border px-2 py-4">{p.description}</td>
+                       <td className="border px-2 py-4">{p.paidThrough}</td>
+                       <td className="border px-2 py-4">{p.paidBy}</td>
+                      
+                      
+                       
+                      
+                       
+                       <td className="border px-2 py-4">
+                       <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 "
+                       onClick={()=>{deletePeriodicpayment(p._id)}}
+                       >delete</button>
+                       </td>
+                       
+                           
+                       
+                    </tr>
+               ))} 
+           </tbody>
+       </table>
+
+       <div>
+            <button className='bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 border m-5 border-gray-700 rounded'>Total expenses</button>
+            <span className='mr-25 mb-30 font-bold text-lg'>$.{total}</span>
+           </div>
+
+       <Link to ="/member/periodicpaymentmemForm"><button className="text-white bg-gradient-to-r m-10 from-blue-400 via-bblue-500 to-blue-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
+      +</button></Link>
+
+   
+       {/* <ExpensesFilter
+          selected={filteredYear}
+          onChangeFilter={filterChangeHandler}
+        />
+        <ExpensesChart expenses={filteredExpenses}/>
+        {expensesContent} */}
+
+   
+        </div>
+
+)
+                
+
+}
+
+export default Periodicpayment
+
+
+
+
+        
+    
